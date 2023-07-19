@@ -1,5 +1,5 @@
 Name:           apktool
-Version:        2.7.0
+Version:        2.8.0
 Release:        1%{?dist}
 Summary:        A tool for reverse engineering Android apk files
 
@@ -29,5 +29,8 @@ install -Dm 0644 %{SOURCE1} "%{buildroot}%{_datadir}/%{name}/%{name}.jar"
 
 
 %changelog
+* Wed Jul 19 2023 Alberto Pedron <albertop2197@gmail.com> - 2.8.0-1
+- Update to v2.8.0
+
 * Sun Nov 27 2022 Alberto Pedron <albertop2197@gmail.com>
 - Initial release
