@@ -1,0 +1,43 @@
+name: Check updates
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '0 0 * * 1'
+
+env:
+  USER: Github Actions <github-actions@users.noreply.github.com>
+  COMMENT: Update Package
+
+jobs:
+  check-updates:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: "Retrieve latest version"
+        uses: oprypin/find-latest-tag@v1
+        id: version
+        with:
+          repository: iBotPeaches/Apktool
+          releases-only: true
+
+      - name: "Save latest version"
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          TAG="${TAG#v}"
+          echo "LATEST_VERSION=$TAG" >> "$GITHUB_ENV"
+
+      - name: "Clone repository"
+        uses: actions/checkout@v6
+
+      - name: Bump Puro version in the spec file
+        uses: docker://ghcr.io/alberto97/fedora-rpm-dev:latest
+        with:
+          args: rpmdev-bumpspec -D -u "${{ env.USER }}" -c "${{ env.COMMENT }}" apktool.spec -n "${{ env.LATEST_VERSION }}"
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: Update Apktool to v${{ env.LATEST_VERSION }}
+          tagging_message: v${{ env.LATEST_VERSION }}-1
